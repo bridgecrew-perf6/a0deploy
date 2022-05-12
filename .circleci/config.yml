@@ -1,0 +1,26 @@
+version: 2.1
+description: Auth0 Brazil Scripts Deployment Pipeline
+
+orbs:
+  docker: circleci/docker@2.1.1
+
+jobs:
+  build:
+    executor: docker/machine
+    steps:
+      - checkout
+      - run:
+          name: 'Building Docker Image'
+          command: |
+            export TAG=latest >> $BASH_ENV
+            docker build --pull --rm -f "Dockerfile" -t a0deploy:${TAG} "."
+      - run:
+          name: 'Testing Docker Builded Image'
+          command: |
+            docker run -it --rm a0deploy:latest
+
+workflows:
+  workflow:
+    jobs:
+      - build:
+          name: Auth0 Docker Image Build
